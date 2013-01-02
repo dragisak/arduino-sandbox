@@ -15,6 +15,9 @@ long lastencoderValue = 0;
 int lastMSB = 0;
 int lastLSB = 0;
 
+boolean toggle = false;
+int previousButtonState = LOW;
+
 
 byte randX = 0;
 int randY = 0;
@@ -50,24 +53,31 @@ void setup() {
   
 }
 
+void readButton() {
+  
+  int buttonState = digitalRead(buttonPin);
+  
+  if (buttonState && buttonState != previousButtonState ) {
+    toggle = !toggle;
+  } 
+  previousButtonState = buttonState;
+}
+
+
+
 void loop() {
   
   
   
   // count from 0 to 255 and display the number 
   // on the LEDs
-  if (digitalRead(buttonPin)) {
+  if (toggle) {
     
     for (int numberToDisplay = 0; numberToDisplay < 256; numberToDisplay++) {
       
       drawLeds(encoderValue);
       // take the latchPin low so 
       // the LEDs don't change while you're sending in bits:
-
-      
-      if (!digitalRead(buttonPin)) {
-        break;
-      }
 
       digitalWrite(latchPin, LOW);
       // shift out the bits:
@@ -76,13 +86,21 @@ void loop() {
       //take the latch pin high so the LEDs will light up:
       digitalWrite(latchPin, HIGH);
       
+      readButton();
       
-      if (!digitalRead(buttonPin)) {
+      if (!toggle) {
         break;
       }
   
       // pause before next value:
-      delay(500);
+      delay(100);
+      readButton();
+      delay(100);
+      readButton();
+      delay(100);
+      readButton();
+      delay(100);
+      readButton();
     }
   } else {
     
@@ -93,7 +111,13 @@ void loop() {
    digitalWrite(latchPin, LOW);
    shiftOut(dataPin, clockPin, LSBFIRST, randY);  
    digitalWrite(latchPin, HIGH);
-   delay(200);
+   readButton();
+   delay(100);
+   readButton();
+   delay(100);
+   readButton();
+   delay(100);
+   readButton();
 
   }
   
