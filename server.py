@@ -18,4 +18,5 @@ while 1:
    print data
    conn.send(data)
 
+print 'Closing ..'
 conn.close()
